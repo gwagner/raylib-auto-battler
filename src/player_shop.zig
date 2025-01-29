@@ -160,6 +160,7 @@ pub fn card_selected_index(self: *Self) i32 {
 
 pub fn refresh_shop(self: *Self) !void {
     if (rl.isKeyPressed(rl.KeyboardKey.r)) {
+        try self.game.shop.return_cards(self.cards.items);
         self.cards.deinit();
         self.cards = std.ArrayList(*shop_card).init(self.alloc);
         const cards = try self.player.game.shop.roll(3);

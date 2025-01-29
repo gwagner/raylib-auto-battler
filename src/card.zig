@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const game = @import("client_game.zig");
 const tween = @import("tween.zig");
+const Texture = @import("textures.zig").Cards;
 const util = @import("util.zig");
 const Self = @This();
 
@@ -9,6 +10,7 @@ allocator: std.mem.Allocator,
 game: *game,
 
 // Setup the dims
+base_texture: Texture,
 texture: rl.Texture = undefined,
 texture_height: f32 = undefined,
 texture_width: f32 = undefined,
@@ -32,11 +34,12 @@ off_hover_animation: f32 = 0.05,
 
 selected: bool = false,
 
-pub fn init(alloc: std.mem.Allocator, c: *game) !*Self {
+pub fn init(alloc: std.mem.Allocator, c: *game, t: Texture) !*Self {
     const self: *Self = try alloc.create(Self);
     self.* = Self{
         .allocator = alloc,
         .game = c,
+        .base_texture = t,
         .rotation = 0,
         .destination = try tween.Rectangle.init(alloc, 0.0, 0.0, 0.0, 0.0, 0.0),
         .hover_rectangle = try tween.Rectangle.init(alloc, 0.0, 0.0, 0.0, 0.0, 0.0),
@@ -46,7 +49,7 @@ pub fn init(alloc: std.mem.Allocator, c: *game) !*Self {
 }
 
 pub fn load(self: *Self) !void {
-    self.texture = try self.game.textures.get_texture_by_id(game.Textures.Archie_Card);
+    self.texture = try self.game.textures.get_card_by_id(self.base_texture);
     self.texture_height = @floatFromInt(self.texture.height);
     self.texture_width = @floatFromInt(self.texture.width);
 }

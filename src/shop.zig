@@ -2,6 +2,7 @@ const std = @import("std");
 const card = @import("card.zig");
 const game = @import("client_game.zig");
 const shop_card = @import("shop_card.zig");
+const Texture = @import("textures.zig").Cards;
 const Self = @This();
 
 alloc: std.mem.Allocator,
@@ -21,66 +22,69 @@ pub fn init(alloc: std.mem.Allocator, g: *game) !*Self {
 }
 
 pub fn load(self: *Self) !void {
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
-    try self.pool.append(try shop_card.init(self.alloc, self.game));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Archie_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.Jasper_Card));
+    try self.pool.append(try shop_card.init(self.alloc, self.game, Texture.McCormick_Card));
 
     for (0..self.pool.items.len, self.pool.items) |i, c| {
         c.index = i;
@@ -88,6 +92,7 @@ pub fn load(self: *Self) !void {
     }
 }
 
+// FIXME: Absolutely not thread safe in any way
 pub fn roll(self: *Self, num_cards: u32) ![]*shop_card {
     var ret = std.ArrayList(*shop_card).init(self.alloc);
     defer ret.deinit();
@@ -99,6 +104,12 @@ pub fn roll(self: *Self, num_cards: u32) ![]*shop_card {
     }
 
     return try ret.toOwnedSlice();
+}
+
+pub fn return_cards(_: *Self, cards: []*shop_card) !void {
+    for (cards) |c| {
+        c.locked = false;
+    }
 }
 
 pub fn purchase_card(self: *Self, idx: usize) !void {
