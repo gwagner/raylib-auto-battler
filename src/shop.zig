@@ -92,7 +92,8 @@ pub fn load(self: *Self) !void {
     }
 }
 
-// FIXME: Absolutely not thread safe in any way
+// FIXME: Absolutely not thread safe in any way which is fine for local testing, but will need to consider
+// thread safety once more than one player rolls
 pub fn roll(self: *Self, num_cards: u32) ![]*shop_card {
     var ret = std.ArrayList(*shop_card).init(self.alloc);
     defer ret.deinit();

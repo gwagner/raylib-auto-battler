@@ -76,4 +76,18 @@ pub fn build(b: *std.Build) void {
     // running the unit tests.
     const test_step = b.step("test", "Run unit tests");
     test_step.dependOn(&run_exe_unit_tests.step);
+
+    const exe_check = b.addExecutable(.{
+        .name = "rtmp-server",
+        .root_source_file = b.path("src/main.zig"),
+        .target = b.host,
+    });
+    exe_check.linkLibrary(raylib_artifact);
+    exe_check.root_module.addImport("raylib", raylib);
+    exe_check.root_module.addImport("raygui", raygui);
+
+    exe_check.step.dependOn(&exe.step);
+
+    const check = b.step("check", "Check if auto-battler compiles");
+    check.dependOn(&exe_check.step);
 }
