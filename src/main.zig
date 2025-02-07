@@ -1,6 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const client = @import("client_game.zig");
+const util = @import("util.zig");
 const expect = std.testing.expect;
 
 pub fn main() !void {
@@ -22,7 +23,6 @@ pub fn main() !void {
     defer rl.closeWindow(); // Close window and OpenGL context
 
     //--------------------------------------------------------------------------------------
-
     const c = try client.init(allocator);
     c.updateDimensions(rl.getScreenHeight(), rl.getScreenWidth());
     rl.beginDrawing();
@@ -54,20 +54,7 @@ pub fn main() !void {
 
         rl.clearBackground(rl.Color.white);
 
-        c.draw();
-
-        if (c.debug) {
-            rl.drawFPS(10, 10);
-
-            const mousePosition = rl.getMousePosition();
-
-            const pos_text = try std.fmt.allocPrintZ(allocator, "Mouse Position: ({d}, {d})", .{ mousePosition.x, mousePosition.y });
-            rl.drawText(@ptrCast(pos_text.ptr), 10, 40, 10, rl.Color.green);
-            allocator.free(pos_text);
-
-            rl.drawLine(ftoi(mousePosition.x), 0, ftoi(mousePosition.x), c.current_screen_height, rl.Color.green);
-            rl.drawLine(0, ftoi(mousePosition.y), c.current_screen_width, ftoi(mousePosition.y), rl.Color.green);
-        }
+        try c.draw();
     }
 
     c.deinit();

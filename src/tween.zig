@@ -20,7 +20,26 @@ pub fn Tween(comptime T: type) type {
             if (try self.finished()) return self.get_ret_val();
 
             self.frame_counter += 1;
-            self.current += self.step;
+
+            switch (self.direction) {
+                .Increase => blk: {
+                    if (self.current + self.step > try self.f32final()) {
+                        self.current = try self.f32final();
+                        break :blk;
+                    }
+
+                    self.current += self.step;
+                },
+                .Decrease => blk: {
+                    if (self.current + self.step < try self.f32final()) {
+                        self.current = try self.f32final();
+                        break :blk;
+                    }
+
+                    self.current += self.step;
+                },
+                .Static => {},
+            }
 
             return self.get_ret_val();
         }
@@ -73,11 +92,11 @@ pub fn Tween(comptime T: type) type {
 
         pub fn finished(self: *Self) !bool {
             return switch (self.direction) {
-                .Decrease => {
-                    if (self.current > try self.f32final()) return false else return true;
+                .Decrease => blk: {
+                    if (self.current > try self.f32final()) break :blk false else break :blk true;
                 },
-                .Increase => {
-                    if (self.current < try self.f32final()) return false else return true;
+                .Increase => blk: {
+                    if (self.current < try self.f32final()) break :blk false else break :blk true;
                 },
                 .Static => true,
             };
