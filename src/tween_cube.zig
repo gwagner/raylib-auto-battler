@@ -18,7 +18,7 @@ rotation_z: tw.Tween(f32),
 positions: std.ArrayList(Position),
 
 pub fn init_zero(alloc: std.mem.Allocator) !*Self {
-    return Self.init(alloc, 0, 0, 0, 0, 0, 0, 0, 0);
+    return Self.init(alloc, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 pub fn init(alloc: std.mem.Allocator, x: f32, y: f32, z: f32, h: f32, w: f32, l: f32, rx: f32, ry: f32, rz: f32) !*Self {
@@ -58,27 +58,21 @@ pub fn update_cube(self: *Self, x: f32, y: f32, h: f32, w: f32, rx: f32, ry: f32
 pub fn update_x(self: *Self, x: f32, d: f32) !void {
     try self.x.update(x, d);
 }
-
 pub fn update_y(self: *Self, y: f32, d: f32) !void {
     try self.y.update(y, d);
 }
-
 pub fn update_z(self: *Self, z: f32, d: f32) !void {
     try self.z.update(z, d);
 }
-
 pub fn update_height(self: *Self, h: f32, d: f32) !void {
     try self.height.update(h, d);
 }
-
 pub fn update_width(self: *Self, w: f32, d: f32) !void {
     try self.width.update(w, d);
 }
-
 pub fn update_length(self: *Self, l: f32, d: f32) !void {
-    try self.width.update(l, d);
+    try self.length.update(l, d);
 }
-
 pub fn update_rotation_x(self: *Self, r: f32, d: f32) !void {
     try self.rotation_x.update(r, d);
 }
@@ -93,8 +87,8 @@ pub fn tween(self: *Self) !void {
     _ = try self.x.tween();
     _ = try self.y.tween();
     _ = try self.z.tween();
-    _ = try self.height.tween();
     _ = try self.width.tween();
+    _ = try self.height.tween();
     _ = try self.length.tween();
     _ = try self.rotation_x.tween();
     _ = try self.rotation_y.tween();
@@ -142,6 +136,25 @@ pub fn tween(self: *Self) !void {
         }
 
         self.tweening = true;
+    }
+}
+
+pub fn debug(self: *Self) void {
+    inline for (std.meta.fields(@TypeOf(self.*))) |field| {
+        if (@TypeOf(@field(self, field.name)) == tw.Tween(f32)) {
+            std.log.err(
+                "Field: {s} | Initial: {d} | Final: {d} | Current: {d} | Step: {d} | Direction: {s} | FC: {d}",
+                .{
+                    field.name,
+                    @field(self, field.name).initial,
+                    @field(self, field.name).final,
+                    @field(self, field.name).current,
+                    @field(self, field.name).step,
+                    @tagName(@field(self, field.name).direction),
+                    @field(self, field.name).frame_counter,
+                },
+            );
+        }
     }
 }
 

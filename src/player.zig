@@ -37,10 +37,10 @@ pub fn load(self: *Self) !void {
 
 pub fn update(self: *Self) !void {
     try self.shop.update();
-    try self.hand.update();
+    // try self.hand.update();
 }
 
 pub fn draw(self: *Self) void {
     self.shop.draw();
-    self.hand.draw();
+    // self.hand.draw();
 }

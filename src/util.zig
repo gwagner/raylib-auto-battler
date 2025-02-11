@@ -1,7 +1,6 @@
 const std = @import("std");
 const rl = @import("raylib");
 const game = @import("client_game.zig");
-const Self = @This();
 
 pub fn f_to_i32(f: anytype) !i32 {
     const t = @typeInfo(@TypeOf(f));
@@ -131,55 +130,83 @@ pub fn getScreenDimensionsAtDepth(camera: rl.Camera) rl.Vector3 {
 //
 // }
 
-pub fn getWorldToScreen(x: f32, y: f32, z: f32, camera: rl.Camera) rl.Vector3 {
-    return getWorldToScreenByVec3(
-        rl.Vector3{
-            .x = x,
-            .y = y,
-            .z = z,
-        },
-        camera,
-    );
+// pub fn getWorldToScreen(x: f32, y: f32, z: f32, camera: rl.Camera) rl.Vector3 {
+//     return getWorldToScreenByVec3(
+//         rl.Vector3{
+//             .x = x,
+//             .y = y,
+//             .z = z,
+//         },
+//         camera,
+//     );
+// }
+
+// pub fn getWorldToScreenByVec3(vec3: rl.Vector3, camera: rl.Camera) rl.Vector3 {
+//     const screen_width: f32 = try Self.i_to_f32(game.defaultScreenWidth);
+//     const screen_height: f32 = try Self.i_to_f32(game.defaultScreenHeight);
+//     const screen_aspect: f32 = screen_width / screen_height;
+//
+//     const screen_half_width = screen_width / 2;
+//     const screen_half_height = screen_height / 2;
+//
+//     const normalized_x: f32 = (2.0 * screen_half_width / screen_width) - 1.0;
+//     const normalized_y: f32 = 1.0 - (2.0 * screen_half_height / screen_height);
+//
+//     const fov: f32 = camera.fovy;
+//     const half_fov: f32 = fov / 2;
+//     const tan_half_fov: f32 = std.math.tan(half_fov);
+//
+//     const x_cam = normalized_x * tan_half_fov * screen_aspect;
+//     const y_cam = normalized_y * tan_half_fov;
+//     const z_cam = -1;
+//
+//     var ray_cam = rl.Vector3{ .x = x_cam, .y = y_cam, .z = z_cam };
+//     ray_cam = ray_cam.normalize();
+//
+//     const camera_pos = camera.position;
+//     const ray_world = ray_cam;
+//
+//     if (@abs(ray_world.z) < 1e-6) {
+//         unreachable;
+//     }
+//
+//     const t = (vec3.z - camera_pos.z) / ray_world.z;
+//     const intersection = camera_pos.add(ray_world.scale(t));
+//
+//     const ret = rl.Vector3{
+//         .x = intersection.x,
+//         .y = intersection.y,
+//         .z = intersection.z,
+//     };
+//
+//     std.log.debug("getWorldToScreenByVec3: ({d}, {d}, {d})", .{ ret.x, ret.y, ret.z });
+//     return ret;
+// }
+
+pub fn FrameCheck(comptime T: type) type {
+    return struct {
+        val: T,
+        frame: f64 = 0,
+
+        const Self = @This();
+
+        pub fn isValid(self: *Self) bool {
+            if (std.math.approxEqAbs(f64, game.current_frame_time, self.frame, 0.001)) {
+                return true;
+            }
+
+            return false;
+        }
+
+        pub fn update(self: *Self, v: T) void {
+            self.val = v;
+            self.frame = game.current_frame_time;
+        }
+    };
 }
 
-pub fn getWorldToScreenByVec3(vec3: rl.Vector3, camera: rl.Camera) rl.Vector3 {
-    const screen_width: f32 = try Self.i_to_f32(game.defaultScreenWidth);
-    const screen_height: f32 = try Self.i_to_f32(game.defaultScreenHeight);
-    const screen_aspect: f32 = screen_width / screen_height;
-
-    const screen_half_width = screen_width / 2;
-    const screen_half_height = screen_height / 2;
-
-    const normalized_x: f32 = (2.0 * screen_half_width / screen_width) - 1.0;
-    const normalized_y: f32 = 1.0 - (2.0 * screen_half_height / screen_height);
-
-    const fov: f32 = camera.fovy;
-    const half_fov: f32 = fov / 2;
-    const tan_half_fov: f32 = std.math.tan(half_fov);
-
-    const x_cam = normalized_x * tan_half_fov * screen_aspect;
-    const y_cam = normalized_y * tan_half_fov;
-    const z_cam = -1;
-
-    var ray_cam = rl.Vector3{ .x = x_cam, .y = y_cam, .z = z_cam };
-    ray_cam = ray_cam.normalize();
-
-    const camera_pos = camera.position;
-    const ray_world = ray_cam;
-
-    if (@abs(ray_world.z) < 1e-6) {
-        unreachable;
-    }
-
-    const t = (vec3.z - camera_pos.z) / ray_world.z;
-    const intersection = camera_pos.add(ray_world.scale(t));
-
-    const ret = rl.Vector3{
-        .x = intersection.x,
-        .y = intersection.y,
-        .z = intersection.z,
+pub fn frameCheck(val: anytype) FrameCheck(@TypeOf(val)) {
+    return .{
+        .val = val,
     };
-
-    std.log.debug("getWorldToScreenByVec3: ({d}, {d}, {d})", .{ ret.x, ret.y, ret.z });
-    return ret;
 }

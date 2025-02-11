@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const dbg = @import("debug.zig");
 const lo = @import("layout.zig");
+const mod = @import("model_library.zig");
 const sh = @import("shop.zig");
 const tex = @import("textures.zig");
 const util = @import("util.zig");
@@ -14,6 +15,7 @@ pub const defaultScreenWidth: i32 = 1920;
 pub const screenRatio: f32 = defaultScreenWidth / defaultScreenHeight;
 pub var windowTitle: *const [12:0]u8 = "Auto Battler";
 pub const targetFPS: i32 = 60;
+pub var current_frame_time: f64 = 0;
 
 // Meta
 parent_allocator: std.mem.Allocator,
@@ -29,6 +31,9 @@ camera: rl.Camera3D,
 
 // layout
 layout: *lo,
+
+// models
+models: *mod,
 
 // Textures
 textures: *tex,
@@ -73,6 +78,7 @@ pub fn init(alloc: std.mem.Allocator) !*Self {
         .camera = get_default_camera(),
         .debug_view = try dbg.init(arena.allocator(), self, camera),
         .layout = try lo.init(arena.allocator(), self),
+        .models = try mod.init(arena.allocator()),
         .shop = try sh.init(arena.allocator(), self),
         .textures = try tex.init(arena.allocator()),
         .current_player = try player.init(arena.allocator(), self),
@@ -97,7 +103,8 @@ pub fn allocator(self: *Self) std.mem.Allocator {
 }
 
 pub fn deinit(self: *Self) void {
-    try self.textures.deinit();
+    // try self.textures.deinit();
+    self.models.deinit();
     self.debug_view.deinit();
     self.arena.deinit();
     self.parent_allocator.destroy(self.arena);
@@ -105,13 +112,14 @@ pub fn deinit(self: *Self) void {
 }
 
 pub fn load(self: *Self) !void {
-    try self.layout.load();
-    try self.textures.load();
+    try self.models.load();
     try self.shop.load();
+    try self.layout.load();
+    // try self.textures.load();
     try self.current_player.load();
-    for (self.opponents) |p| {
-        try p.load();
-    }
+    // for (self.opponents) |p| {
+    //     try p.load();
+    // }
 }
 
 fn get_default_camera() rl.Camera {
@@ -137,10 +145,10 @@ fn get_default_camera() rl.Camera {
 }
 
 pub fn update(self: *Self) !void {
-    try self.add_debug("Cull Distance Near {d} / Far {d}", .{ rl.gl.rl_cull_distance_near, rl.gl.rl_cull_distance_far });
+    Self.current_frame_time = rl.getTime();
     try self.debug_view.update();
     try self.layout.update();
-    // try self.current_player.update();
+    try self.current_player.update();
 }
 
 pub fn add_debug(self: *Self, comptime format: []const u8, args: anytype) !void {
@@ -150,7 +158,7 @@ pub fn add_debug(self: *Self, comptime format: []const u8, args: anytype) !void 
 pub fn draw(self: *Self) !void {
     self.camera.begin();
     try self.layout.draw();
-    // self.current_player.draw();
+    self.current_player.draw();
 
     if (self.debug) {
         try self.debug_view.draw();
