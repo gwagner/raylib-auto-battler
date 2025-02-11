@@ -133,111 +133,44 @@ pub fn check_selected(self: *Self) !void {
 
     // if we think we have something selected, but the mouse button is not depressed
     if (self.game.current_player.has_card_selected and !rl.isMouseButtonDown(rl.MouseButton.left)) {
+        std.log.debug("Set Deselected State", .{});
+        self.is_selected.update(false);
+        self.game.current_player.has_card_selected = false;
+        return;
+    }
+
+    if (self.game.current_player.has_card_selected and !rl.isWindowFocused()) {
+        std.log.debug("Set Deselected State: Loose Focus", .{});
         self.is_selected.update(false);
         self.game.current_player.has_card_selected = false;
         return;
     }
 }
 
-// fixme this should live somwehere else
+// FIXME: this should live somewhere else
 fn get_board_bounding_box(self: *Self) rl.BoundingBox {
-    var bb = rl.getModelBoundingBox(self.game.layout.board_cube);
-    bb.min.x = self.game.layout.board_dims.get_x() + bb.min.x;
-    bb.min.y = self.game.layout.board_dims.get_y() + bb.min.y;
-    bb.min.z = self.game.layout.board_dims.get_z() + bb.min.z;
-    bb.max.x = self.game.layout.board_dims.get_x() + bb.max.x;
-    bb.max.y = self.game.layout.board_dims.get_y() + bb.max.y;
-    bb.max.z = self.game.layout.board_dims.get_z() + bb.max.z;
+    var bb = rl.getModelBoundingBox(self.game.layout.background_cube);
+    bb.min.x = self.game.layout.background_dims.get_x() + bb.min.x;
+    bb.min.y = self.game.layout.background_dims.get_y() + bb.min.y;
+
+    // FIXME: probably really jank to add a static 50 here
+    bb.min.z = (self.game.layout.shop_dims.get_z() + 50) + bb.min.z;
+    bb.max.x = self.game.layout.background_dims.get_x() + bb.max.x;
+    bb.max.y = self.game.layout.background_dims.get_y() + bb.max.y;
+
+    // FIXME: probably really jank to add a static 50 here
+    bb.max.z = (self.game.layout.shop_dims.get_z() + 50) + bb.max.z;
 
     return bb;
 }
 pub fn update_selected_position(self: *Self) !void {
     const ray = rl.getScreenToWorldRay(rl.getMousePosition(), self.game.camera);
     const intersection = rl.getRayCollisionBox(ray, self.get_board_bounding_box());
-    try self.position.update_z(self.parent_position.get_z() + 50, 0.15);
 
-    // const position = rl.math.vector3Multiply(self.position.get_raylib_position_vec3(), ray.direction);
     try self.position.update_x(intersection.point.x, 0);
     try self.position.update_y(intersection.point.y, 0);
+    try self.position.update_z(self.parent_position.get_z() + 50, 0.15);
 }
-
-// pub fn getScaleDivisor(self: *Self) f32 {
-//     const max_width = self.max_width * self.game.getScale();
-//     if (self.texture_width == max_width) {
-//         return 1;
-//     }
-//
-//     return self.texture_width / max_width;
-// }
-//
-// pub fn getScaledHeight(self: *Self) f32 {
-//     return (self.texture_height / self.getScaleDivisor()) + self.hover_rectangle.get_height();
-// }
-//
-// pub fn getScaledWidth(self: *Self) f32 {
-//     return (self.texture_width / self.getScaleDivisor()) + self.hover_rectangle.get_width();
-// }
-
-// pub fn getSource(self: *Self) rl.Rectangle {
-//     return .{
-//         .x = 0,
-//         .y = 0,
-//         .height = self.texture_height,
-//         .width = self.texture_width,
-//     };
-// }
-//
-// pub fn getOrigin(self: *Self) rl.Vector2 {
-//     return .{
-//         .x = 0 + self.hover_x_tween.current,
-//         .y = 0 + self.hover_y_tween.current,
-//     };
-// }
-//
-// pub fn getCenterOrigin(self: *Self) rl.Vector2 {
-//     return .{
-//         .x = (self.getScaledWidth() / 2) + self.hover_rectangle.get_x(),
-//         .y = (self.getScaledHeight() / 2) + self.hover_rectangle.get_y(),
-//     };
-// }
-//
-// pub fn ftoi(f: f32) i32 {
-//     return @intFromFloat(f);
-// }
-//
-// pub fn set_hover(self: *Self) void {
-//     // already setup for hovering
-//     if (self.hover) {
-//         return;
-//     }
-//
-//     self.hover = true;
-//     self.zIndex = 1;
-//     try self.hover_rectangle.update_rect(
-//         (self.width * self.on_hover_scale) / 4,
-//         (self.height * self.on_hover_scale) / 2,
-//         self.height * self.on_hover_scale,
-//         self.height * self.on_hover_scale,
-//         -1 * self.destination.get_rotation(),
-//         self.on_hover_animation,
-//     );
-// }
-//
-// pub fn reset_hover(self: *Self) void {
-//     self.hover = false;
-//     self.zIndex = 0;
-//     try self.hover_rectangle.update_rect(0, 0, 0, 0, 0, self.off_hover_animation);
-// }
-//
-// pub fn set_selected(self: *Self) void {
-//     self.selected = true;
-//     self.reset_hover();
-// }
-//
-// pub fn reset_selected(self: *Self) void {
-//     self.selected = false;
-//     self.reset_hover();
-// }
 
 pub fn draw(self: *Self) void {
     self.model.drawEx(
@@ -255,15 +188,4 @@ pub fn draw(self: *Self) void {
         },
         rl.Color.white,
     );
-    // util.print_vector_to_console("Card Position", self.position.get_raylib_position_vec3());
-    // util.print_vector_to_console("Card Size", self.position.get_raylib_size_vec3());
-
-    // rl.drawTexturePro(
-    //     self.texture,
-    //     self.getSource(),
-    //     self.destination.get_raylib_rectangle(),
-    //     origin,
-    //     self.rotation + self.hover_rectangle.get_rotation(),
-    //     rl.Color.white,
-    // );
 }

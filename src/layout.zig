@@ -2,8 +2,8 @@ const std = @import("std");
 const rl = @import("raylib");
 const container = @import("layout_container.zig");
 const client_game = @import("client_game.zig");
-const cube = @import("tween_cube.zig");
 const player = @import("player.zig");
+const tween = @import("tween.zig");
 const Self = @This();
 const ContainerType = *container.NewContainer(*Self);
 const ContainerSize = 2;
@@ -20,13 +20,14 @@ opponent_board: ContainerType = undefined,
 current_player_board: ContainerType = undefined,
 current_player: ContainerType = undefined,
 
-background_dims: *cube,
-play_area_dims: *cube,
-shop_keeper_dims: *cube,
-shop_dims: *cube,
-board_dims: *cube,
-player_dims: *cube,
+background_dims: *tween.Cube,
+play_area_dims: *tween.Cube,
+shop_keeper_dims: *tween.Cube,
+shop_dims: *tween.Cube,
+board_dims: *tween.Cube,
+player_dims: *tween.Cube,
 
+background_cube: rl.Model,
 shop_keeper_cube: rl.Model,
 shop_cube: rl.Model,
 board_cube: rl.Model,
@@ -52,6 +53,19 @@ pub fn init(alloc: std.mem.Allocator, game: *client_game) !*Self {
     const shop_keeper_height: f32 = play_area_height * 0.2;
     const shop_height: f32 = play_area_height * 0.3;
 
+    const background_dims = try tween.Cube.init(
+        alloc,
+        0,
+        0,
+        -500,
+        background_square,
+        background_square,
+        -2,
+        0,
+        0,
+        0,
+    );
+    const background_mesh = rl.genMeshCube(background_dims.get_width(), background_dims.get_height(), background_dims.get_length());
     const shop_keeper_mesh = rl.genMeshCube(inner_width, shop_keeper_height, 6);
     const shop_mesh = rl.genMeshCube(inner_width, shop_height, 6);
     const board_mesh = rl.genMeshCube(inner_width, shop_height, 6);
@@ -60,9 +74,9 @@ pub fn init(alloc: std.mem.Allocator, game: *client_game) !*Self {
     self.* = Self{
         .alloc = alloc,
         .game = game,
-        .background_dims = try cube.init(alloc, 0, 0, -500, background_square, background_square, -2, 0, 0, 0),
-        .play_area_dims = try cube.init(alloc, 0, 0, -450, play_area_height, play_area_width, -10, 0, 0, 0),
-        .shop_keeper_dims = try cube.init(
+        .background_dims = background_dims,
+        .play_area_dims = try tween.Cube.init(alloc, 0, 0, -450, play_area_height, play_area_width, -10, 0, 0, 0),
+        .shop_keeper_dims = try tween.Cube.init(
             alloc,
             0,
             (play_area_height / 2) - (shop_keeper_height / 2),
@@ -74,7 +88,7 @@ pub fn init(alloc: std.mem.Allocator, game: *client_game) !*Self {
             0,
             0,
         ),
-        .shop_dims = try cube.init(
+        .shop_dims = try tween.Cube.init(
             alloc,
             0,
             (play_area_height / 2) - shop_keeper_height - (shop_height / 2),
@@ -86,7 +100,7 @@ pub fn init(alloc: std.mem.Allocator, game: *client_game) !*Self {
             0,
             0,
         ),
-        .board_dims = try cube.init(
+        .board_dims = try tween.Cube.init(
             alloc,
             0,
             (play_area_height / 2) - shop_keeper_height - shop_height - (shop_height / 2),
@@ -98,7 +112,7 @@ pub fn init(alloc: std.mem.Allocator, game: *client_game) !*Self {
             0,
             0,
         ),
-        .player_dims = try cube.init(
+        .player_dims = try tween.Cube.init(
             alloc,
             0,
             (play_area_height / 2) - shop_keeper_height - (shop_height * 2) - (shop_keeper_height / 2),
@@ -110,6 +124,7 @@ pub fn init(alloc: std.mem.Allocator, game: *client_game) !*Self {
             0,
             0,
         ),
+        .background_cube = try rl.loadModelFromMesh(background_mesh),
         .shop_keeper_cube = try rl.loadModelFromMesh(shop_keeper_mesh),
         .shop_cube = try rl.loadModelFromMesh(shop_mesh),
         .board_cube = try rl.loadModelFromMesh(board_mesh),
@@ -137,11 +152,11 @@ pub fn update(self: *Self) !void {
     try self.player_dims.tween();
 }
 
-pub fn panel_flip(_: *Self, panel: *cube) !void {
+pub fn panel_flip(_: *Self, panel: *tween.Cube) !void {
     if (panel.tweening) return;
-    try panel.positions.append(cube.Position{ .z = panel.get_z() + 20, .duration = 0.1 });
-    try panel.positions.append(cube.Position{ .rotation_x = @abs(panel.get_rotation_x() - 180), .duration = 0.2 });
-    try panel.positions.append(cube.Position{ .z = panel.get_z(), .duration = 0.1 });
+    try panel.positions.append(tween.Cube.Position{ .z = panel.get_z() + 20, .duration = 0.1 });
+    try panel.positions.append(tween.Cube.Position{ .rotation_x = @abs(panel.get_rotation_x() - 180), .duration = 0.2 });
+    try panel.positions.append(tween.Cube.Position{ .z = panel.get_z(), .duration = 0.1 });
 }
 
 pub fn deinit(self: *Self) void {
@@ -159,9 +174,19 @@ pub fn draw(self: *Self) !void {
 }
 
 pub fn draw_background_cube(self: *Self) void {
-    rl.drawCubeV(
+    self.background_cube.drawEx(
         self.background_dims.get_raylib_position_vec3(),
-        self.background_dims.get_raylib_size_vec3(),
+        rl.Vector3{
+            .x = 1,
+            .y = 0,
+            .z = 0,
+        },
+        self.background_dims.get_rotation_x(),
+        rl.Vector3{
+            .x = 1,
+            .y = 1,
+            .z = 1,
+        },
         rl.Color.black,
     );
 }
